@@ -16,7 +16,21 @@ export function detectPlatform(url: string): MediaMetadata['platform'] {
   return 'other';
 }
 
-export async function fetchSocialMetadata(url: string): Promise<MediaMetadata> {
+export function cleanSocialUrl(rawUrl: string): string {
+  try {
+    const parsed = new URL(rawUrl);
+    // Keep clean pathname for Instagram and TikTok
+    if (parsed.hostname.includes('instagram.com') || parsed.hostname.includes('tiktok.com')) {
+      return `${parsed.origin}${parsed.pathname}`;
+    }
+    return rawUrl;
+  } catch {
+    return rawUrl;
+  }
+}
+
+export async function fetchSocialMetadata(rawUrl: string): Promise<MediaMetadata> {
+  const url = cleanSocialUrl(rawUrl);
   const platform = detectPlatform(url);
   const metadata: MediaMetadata = { platform };
 
@@ -24,7 +38,10 @@ export async function fetchSocialMetadata(url: string): Promise<MediaMetadata> {
     // 1. YouTube oEmbed
     if (platform === 'youtube') {
       const oembedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`;
-      const res = await fetch(oembedUrl, { next: { revalidate: 3600 } });
+      const res = await fetch(oembedUrl, {
+        signal: AbortSignal.timeout(4000),
+        next: { revalidate: 3600 },
+      });
       if (res.ok) {
         const data = await res.json();
         metadata.title = data.title;
@@ -38,6 +55,7 @@ export async function fetchSocialMetadata(url: string): Promise<MediaMetadata> {
     if (platform === 'tiktok') {
       const oembedUrl = `https://www.tiktok.com/oembed?url=${encodeURIComponent(url)}`;
       const res = await fetch(oembedUrl, {
+        signal: AbortSignal.timeout(4000),
         headers: { 'User-Agent': 'Mozilla/5.0 (compatible; RecipeBot/1.0)' },
       });
       if (res.ok) {
@@ -49,8 +67,9 @@ export async function fetchSocialMetadata(url: string): Promise<MediaMetadata> {
       return metadata;
     }
 
-    // 3. Fallback: Fetch OpenGraph meta tags
+    // 3. Fallback: Fetch OpenGraph meta tags with a strict 4-second timeout
     const res = await fetch(url, {
+      signal: AbortSignal.timeout(4000),
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -75,7 +94,7 @@ export async function fetchSocialMetadata(url: string): Promise<MediaMetadata> {
       if (imgMatch) metadata.thumbnailUrl = imgMatch[1];
     }
   } catch (err) {
-    console.warn('Metadata fetch warning:', err);
+    console.warn('Metadata fetch warning (non-fatal):', err);
   }
 
   return metadata;

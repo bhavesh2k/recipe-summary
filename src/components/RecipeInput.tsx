@@ -128,7 +128,18 @@ export function RecipeInput({
       clearTimeout(timer1);
       clearTimeout(timer2);
 
-      const data = await res.json();
+      let data;
+      const resText = await res.text();
+      try {
+        data = JSON.parse(resText);
+      } catch {
+        if (resText.includes('An error occurred') || res.status >= 500) {
+          throw new Error(
+            'Instagram actively blocks automatic link scraping without a login session. You can easily extract this recipe by copying the reel\'s caption into the "Paste Caption" tab or uploading the video clip directly!'
+          );
+        }
+        throw new Error(`Server returned error (${res.status}): ${resText.slice(0, 150)}`);
+      }
 
       if (!res.ok || !data.success) {
         if (data.error && data.error.includes('MISSING_API_KEY')) {
@@ -249,6 +260,15 @@ export function RecipeInput({
           </form>
         )}
 
+        {mode === 'url' && detected === 'instagram' && (
+          <div className="mt-3 text-[11px] text-amber-800 dark:text-amber-300 bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/50 p-2.5 rounded-xl flex items-center gap-2">
+            <span>💡</span>
+            <span>
+              Tip: If this reel is from a private account or blocked by Instagram&apos;s login wall, you can copy the caption into the <strong>Paste Caption</strong> tab or upload a screen recording in the <strong>Upload</strong> tab!
+            </span>
+          </div>
+        )}
+
         {mode === 'upload' && (
           <div className="space-y-3">
             <label className="border-2 border-dashed border-zinc-300 dark:border-zinc-700 rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:border-amber-500 dark:hover:border-amber-400 transition-colors bg-zinc-50 dark:bg-zinc-800/40">
@@ -328,6 +348,18 @@ export function RecipeInput({
                 className="px-2.5 py-1 rounded-lg bg-red-600 text-white text-xs font-bold hover:bg-red-700 shrink-0"
               >
                 Configure Key
+              </button>
+            )}
+            {(error.includes('Instagram') || error.includes('caption') || error.includes('Caption')) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setMode('text');
+                  setError(null);
+                }}
+                className="px-2.5 py-1 rounded-lg bg-amber-600 text-white text-xs font-bold hover:bg-amber-700 shrink-0 ml-auto whitespace-nowrap"
+              >
+                Paste Caption Tab →
               </button>
             )}
           </div>

@@ -145,6 +145,7 @@ Instructions:
 
   if (params.url) {
     promptText += `Source URL: ${params.url}\n`;
+    promptText += `Note: Use web search or URL context to look up the public recipe, creator, and caption if available. If the URL cannot be accessed at all (e.g. Instagram login wall or private post) and no other text/media is provided, set title to "RECIPE_NOT_ACCESSIBLE" and describe the blockage in description.\n`;
   }
   if (params.metadata?.title) {
     promptText += `Video Title: ${params.metadata.title}\n`;
@@ -164,12 +165,17 @@ Instructions:
     text: promptText,
   });
 
+  const isYouTube = params.url && (params.url.includes('youtube.com') || params.url.includes('youtu.be'));
+  const tools = params.url && !isYouTube ? [{ type: 'google_search' }, { type: 'url_context' }] : undefined;
+
   try {
     const interaction = await ai.interactions.create({
       model: 'gemini-3.8-flash',
       system_instruction: systemInstruction,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       input: inputParts as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      tools: tools as any,
       response_format: {
         type: 'text',
         mime_type: 'application/json',
@@ -183,6 +189,12 @@ Instructions:
     }
 
     const parsedData = JSON.parse(outputText);
+
+    if (parsedData.title === 'RECIPE_NOT_ACCESSIBLE') {
+      throw new Error(
+        'INSTAGRAM_BLOCKED: Instagram prevents automatic link scraping without a login session. You can easily convert this recipe by copying the caption text and pasting it in the "Paste Caption" tab, or by dropping a screen recording in the "Video / Photo Upload" tab!'
+      );
+    }
 
     // Form final recipe object with ID and metadata
     const recipe: Recipe = {
