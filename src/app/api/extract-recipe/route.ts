@@ -7,6 +7,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { url, rawText, mediaBase64, mediaMimeType } = body;
     const customApiKey = req.headers.get('x-gemini-api-key') || undefined;
+    const requestedModel = req.headers.get('x-gemini-model') || undefined;
 
     if (!url && !rawText && !mediaBase64) {
       return NextResponse.json(
@@ -27,6 +28,7 @@ export async function POST(req: NextRequest) {
       mediaMimeType,
       metadata,
       customApiKey,
+      model: requestedModel,
     });
 
     return NextResponse.json({ success: true, recipe });

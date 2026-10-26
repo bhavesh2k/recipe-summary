@@ -102,6 +102,10 @@ export function RecipeInput({
         typeof window !== 'undefined'
           ? localStorage.getItem('gemini_api_key') || undefined
           : undefined;
+      const customModel =
+        typeof window !== 'undefined'
+          ? localStorage.getItem('gemini_model') || 'gemini-3.1-flash-lite'
+          : 'gemini-3.1-flash-lite';
 
       const timer1 = setTimeout(() => {
         setLoadingStep('Analyzing video frames, voiceover, and text overlays...');
@@ -116,6 +120,7 @@ export function RecipeInput({
         headers: {
           'Content-Type': 'application/json',
           ...(customApiKey ? { 'x-gemini-api-key': customApiKey } : {}),
+          'x-gemini-model': customModel,
         },
         body: JSON.stringify({
           url: mode === 'url' ? url.trim() : undefined,

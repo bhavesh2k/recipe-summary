@@ -94,10 +94,12 @@ interface ExtractParams {
   mediaMimeType?: string;
   metadata?: MediaMetadata;
   customApiKey?: string;
+  model?: string;
 }
 
 export async function extractRecipeWithGemini(params: ExtractParams): Promise<Recipe> {
   const apiKey = params.customApiKey || process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+  const selectedModel = params.model || process.env.GEMINI_MODEL || 'gemini-3.1-flash-lite';
 
   if (!apiKey) {
     throw new Error('MISSING_API_KEY: Please provide a Gemini API key in your environment (.env.local) or via the Settings button.');
@@ -170,7 +172,7 @@ Instructions:
 
   try {
     const interaction = await ai.interactions.create({
-      model: 'gemini-3.8-flash',
+      model: selectedModel,
       system_instruction: systemInstruction,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       input: inputParts as any,
