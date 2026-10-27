@@ -15,8 +15,8 @@ export function ApiKeyModal({ isOpen, onClose, onSaved }: ApiKeyModalProps) {
   );
   const [model, setModel] = useState(() =>
     typeof window !== 'undefined'
-      ? localStorage.getItem('gemini_model') || 'gemini-3.1-flash-lite'
-      : 'gemini-3.1-flash-lite'
+      ? localStorage.getItem('gemini_model') || 'gemini-3.5-flash-lite'
+      : 'gemini-3.5-flash-lite'
   );
   const [saved, setSaved] = useState(false);
 
@@ -68,6 +68,34 @@ export function ApiKeyModal({ isOpen, onClose, onSaved }: ApiKeyModalProps) {
           <div className="space-y-2">
             <label
               className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
+                model === 'gemini-3.5-flash-lite'
+                  ? 'bg-amber-500/10 border-amber-500 text-zinc-900 dark:text-zinc-100'
+                  : 'border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800/40 text-zinc-600 dark:text-zinc-400'
+              }`}
+            >
+              <input
+                type="radio"
+                name="model"
+                value="gemini-3.5-flash-lite"
+                checked={model === 'gemini-3.5-flash-lite'}
+                onChange={(e) => setModel(e.target.value)}
+                className="mt-1 accent-amber-500"
+              />
+              <div className="text-xs">
+                <div className="font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
+                  gemini-3.5-flash-lite
+                  <span className="px-1.5 py-0.2 rounded-md bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold">
+                    Recommended (3.5 · ~1,500/day)
+                  </span>
+                </div>
+                <p className="text-zinc-500 mt-0.5 leading-relaxed">
+                  More updated 3.5 generation with improved reasoning, 1M context, and generous daily request limits.
+                </p>
+              </div>
+            </label>
+
+            <label
+              className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
                 model === 'gemini-3.1-flash-lite'
                   ? 'bg-amber-500/10 border-amber-500 text-zinc-900 dark:text-zinc-100'
                   : 'border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800/40 text-zinc-600 dark:text-zinc-400'
@@ -84,12 +112,12 @@ export function ApiKeyModal({ isOpen, onClose, onSaved }: ApiKeyModalProps) {
               <div className="text-xs">
                 <div className="font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
                   gemini-3.1-flash-lite
-                  <span className="px-1.5 py-0.2 rounded-md bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold">
-                    High Quota (~1,500/day)
+                  <span className="px-1.5 py-0.2 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-[10px] font-bold">
+                    Legacy Lite (~1,500/day)
                   </span>
                 </div>
                 <p className="text-zinc-500 mt-0.5 leading-relaxed">
-                  Recommended. Fast responses, high daily request limits, perfect for recipe captions and high usage.
+                  Fast lightweight 3.1 model.
                 </p>
               </div>
             </label>

@@ -90,7 +90,7 @@ export default function Home() {
         {/* Hero Section */}
         <section className="text-center space-y-4 max-w-2xl mx-auto pt-2 sm:pt-6">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-300 text-xs font-bold tracking-wide uppercase">
-            <Sparkles className="w-3.5 h-3.5" /> Powered by Google Gemini 3.8 Flash
+            <Sparkles className="w-3.5 h-3.5" /> Powered by Google Gemini 3.5 Flash-Lite
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-zinc-950 dark:text-zinc-50 leading-[1.15]">

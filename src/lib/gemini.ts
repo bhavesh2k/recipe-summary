@@ -99,7 +99,7 @@ interface ExtractParams {
 
 export async function extractRecipeWithGemini(params: ExtractParams): Promise<Recipe> {
   const apiKey = params.customApiKey || process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
-  const selectedModel = params.model || process.env.GEMINI_MODEL || 'gemini-3.1-flash-lite';
+  const selectedModel = params.model || process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite';
 
   if (!apiKey) {
     throw new Error('MISSING_API_KEY: Please provide a Gemini API key in your environment (.env.local) or via the Settings button.');

@@ -104,8 +104,8 @@ export function RecipeInput({
           : undefined;
       const customModel =
         typeof window !== 'undefined'
-          ? localStorage.getItem('gemini_model') || 'gemini-3.1-flash-lite'
-          : 'gemini-3.1-flash-lite';
+          ? localStorage.getItem('gemini_model') || 'gemini-3.5-flash-lite'
+          : 'gemini-3.5-flash-lite';
 
       const timer1 = setTimeout(() => {
         setLoadingStep('Analyzing video frames, voiceover, and text overlays...');
