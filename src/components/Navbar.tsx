@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { ChefHat, Bookmark } from 'lucide-react';
+import { useTheme } from '@/context/ThemeContext';
 
 interface NavbarProps {
   savedCount: number;
@@ -12,8 +13,10 @@ export function Navbar({
   savedCount,
   onOpenCookbook,
 }: NavbarProps) {
+  const { theme, setTheme } = useTheme();
+
   return (
-    <header className="sticky top-0 z-40 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-zinc-200/80 dark:border-zinc-800">
+    <header className="sticky top-0 z-40 bg-white/70 dark:bg-zinc-950/80 backdrop-blur-md border-b border-zinc-200/80 dark:border-zinc-800 transition-colors">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
@@ -31,14 +34,58 @@ export function Navbar({
         </div>
 
         {/* Right actions */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Theme Selector: Pastel (Default), Clean Light, Dark */}
+          <div className="flex items-center p-0.5 rounded-xl bg-amber-500/10 dark:bg-zinc-800/80 border border-amber-500/20 dark:border-zinc-700 text-xs">
+            <button
+              type="button"
+              onClick={() => setTheme('pastel')}
+              className={`px-2.5 py-1 rounded-lg flex items-center gap-1 font-semibold transition-all ${
+                theme === 'pastel'
+                  ? 'bg-white dark:bg-zinc-700 text-amber-700 dark:text-amber-300 shadow-sm'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+              }`}
+              title="Pastel Light Background (Default)"
+            >
+              <span>🌸</span>
+              <span className="hidden sm:inline">Pastel</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setTheme('light')}
+              className={`px-2.5 py-1 rounded-lg flex items-center gap-1 font-semibold transition-all ${
+                theme === 'light'
+                  ? 'bg-white dark:bg-zinc-700 text-amber-700 dark:text-amber-300 shadow-sm'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+              }`}
+              title="Clean White Light Background"
+            >
+              <span>☀️</span>
+              <span className="hidden sm:inline">Light</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setTheme('dark')}
+              className={`px-2.5 py-1 rounded-lg flex items-center gap-1 font-semibold transition-all ${
+                theme === 'dark'
+                  ? 'bg-white dark:bg-zinc-700 text-amber-500 dark:text-amber-300 shadow-sm'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+              }`}
+              title="Dark Mode Background"
+            >
+              <span>🌙</span>
+              <span className="hidden sm:inline">Dark</span>
+            </button>
+          </div>
+
+          {/* Cookbook button */}
           <button
             type="button"
             onClick={onOpenCookbook}
-            className="px-3.5 py-2 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-300 text-xs font-semibold flex items-center gap-2 transition-all active:scale-95"
+            className="px-3.5 py-2 rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/60 hover:bg-white dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-semibold flex items-center gap-2 transition-all active:scale-95 shadow-sm"
           >
             <Bookmark className="w-3.5 h-3.5 text-amber-500 fill-amber-500/20" />
-            <span>Cookbook</span>
+            <span className="hidden xs:inline">Cookbook</span>
             {savedCount > 0 && (
               <span className="px-1.5 py-0.2 rounded-full bg-amber-500 text-white text-[10px] font-bold">
                 {savedCount}

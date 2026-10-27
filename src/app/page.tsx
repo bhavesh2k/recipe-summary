@@ -9,7 +9,7 @@ import { ShoppingListModal } from '@/components/ShoppingListModal';
 import { CookbookDrawer } from '@/components/CookbookDrawer';
 import { Recipe, UnitSystem } from '@/types/recipe';
 import { SAMPLE_RECIPES } from '@/lib/sample-recipes';
-import { Sparkles, Utensils } from 'lucide-react';
+import { Utensils } from 'lucide-react';
 
 export default function Home() {
   // Active recipe defaults to the first rich sample recipe for immediate exploration
@@ -69,7 +69,7 @@ export default function Home() {
   const isCurrentRecipeSaved = savedRecipes.some((r) => r.id === activeRecipe?.id);
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
+    <div className="min-h-screen flex flex-col bg-transparent text-zinc-900 dark:text-zinc-100">
       {/* Navigation */}
       <Navbar
         savedCount={savedRecipes.length}
@@ -80,10 +80,6 @@ export default function Home() {
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-8 sm:py-12 space-y-12 sm:space-y-16">
         {/* Hero Section */}
         <section className="text-center space-y-4 max-w-2xl mx-auto pt-2 sm:pt-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-300 text-xs font-bold tracking-wide uppercase">
-            <Sparkles className="w-3.5 h-3.5" /> Powered by Google Gemini 3.5 Flash-Lite
-          </div>
-
           <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-zinc-950 dark:text-zinc-50 leading-[1.15]">
             Transform Cooking Reels into{' '}
             <span className="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
@@ -122,7 +118,7 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="mt-16 border-t border-zinc-200 dark:border-zinc-800 py-8 text-center text-xs text-zinc-500 print:hidden">
+      <footer className="mt-16 border-t border-zinc-200/80 dark:border-zinc-800 py-8 text-center text-xs text-zinc-500 print:hidden">
         <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2 font-semibold text-zinc-700 dark:text-zinc-300">
             <Utensils className="w-4 h-4 text-amber-500" />
@@ -130,7 +126,7 @@ export default function Home() {
           </div>
 
           <p className="flex items-center gap-1">
-            Built with Next.js &amp; Google Gemini Multimodal AI
+            Built with Next.js &amp; Multimodal AI
           </p>
 
           <p className="text-zinc-400 text-[11px]">
