@@ -37,9 +37,19 @@ export async function fetchSocialMetadata(rawUrl: string): Promise<MediaMetadata
   try {
     // 1. YouTube oEmbed
     if (platform === 'youtube') {
-      const oembedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`;
+      let cleanYtUrl = url;
+      if (cleanYtUrl.includes('/shorts/')) {
+        const id = cleanYtUrl.split('/shorts/')[1].split('?')[0].split('/')[0];
+        cleanYtUrl = `https://www.youtube.com/watch?v=${id}`;
+      }
+      const oembedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(cleanYtUrl)}&format=json`;
       const res = await fetch(oembedUrl, {
         signal: AbortSignal.timeout(4000),
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+          'Accept': 'application/json',
+          'Accept-Language': 'en-US,en;q=0.9',
+        },
         next: { revalidate: 3600 },
       });
       if (res.ok) {

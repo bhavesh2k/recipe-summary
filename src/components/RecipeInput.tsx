@@ -138,7 +138,17 @@ export function RecipeInput({
           setError('Gemini API key is not configured on the server. Please check your .env.local file.');
           return;
         }
-        throw new Error(data.error || 'Failed to extract recipe.');
+        let cleanErr = data.error || 'Failed to extract recipe.';
+        if (cleanErr.startsWith('Recipe extraction failed: ')) {
+          cleanErr = cleanErr.replace('Recipe extraction failed: ', '');
+        }
+        if (cleanErr.startsWith('LINK_BLOCKED: ')) {
+          cleanErr = cleanErr.replace('LINK_BLOCKED: ', '');
+        }
+        if (cleanErr.startsWith('NO_RECIPE_FOUND: ')) {
+          cleanErr = cleanErr.replace('NO_RECIPE_FOUND: ', '');
+        }
+        throw new Error(cleanErr);
       }
 
       onRecipeExtracted(data.recipe);
@@ -333,7 +343,7 @@ export function RecipeInput({
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
-            {(error.includes('Instagram') || error.includes('caption') || error.includes('Caption')) && (
+            {(error.includes('Instagram') || error.includes('caption') || error.includes('Caption') || error.includes('platforms') || error.includes('Social') || error.includes('YouTube') || error.includes('TikTok')) && (
               <button
                 type="button"
                 onClick={() => {

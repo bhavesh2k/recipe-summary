@@ -122,15 +122,7 @@ Instructions:
     | { type: 'image'; uri?: string; data?: string; mime_type?: string }
   > = [];
 
-  // 1. If YouTube URL, pass directly as video URI
-  if (params.url && (params.url.includes('youtube.com') || params.url.includes('youtu.be'))) {
-    inputParts.push({
-      type: 'video',
-      uri: params.url,
-    });
-  }
-
-  // 2. If uploaded image or video data is present
+  // 1. If uploaded image or video data is present
   if (params.mediaBase64 && params.mediaMimeType) {
     const isVideo = params.mediaMimeType.startsWith('video/');
     inputParts.push({
@@ -140,15 +132,15 @@ Instructions:
     });
   }
 
-  // 3. Assemble text instructions & metadata
+  // 2. Assemble text instructions & metadata
   let promptText = `Extract the complete, structured recipe according to the schema.\n`;
 
   if (params.url) {
     promptText += `Source URL: ${params.url}\n`;
-    promptText += `Note: Use web search or URL context to look up the public recipe, creator, and caption if available. If the URL cannot be accessed at all (e.g. Instagram login wall or private post) and no other text/media is provided, set title to "RECIPE_NOT_ACCESSIBLE" and describe the blockage in description.\n`;
+    promptText += `Note: If this URL is from a social platform (e.g. Instagram, TikTok, YouTube) and no video media, caption text, or title was provided or accessible, set title to "RECIPE_NOT_ACCESSIBLE" and describe the blockage in description.\n`;
   }
   if (params.metadata?.title) {
-    promptText += `Video Title: ${params.metadata.title}\n`;
+    promptText += `Video / Recipe Title: ${params.metadata.title}\n`;
   }
   if (params.metadata?.authorName) {
     promptText += `Creator: ${params.metadata.authorName}\n`;
@@ -165,17 +157,12 @@ Instructions:
     text: promptText,
   });
 
-  const isYouTube = params.url && (params.url.includes('youtube.com') || params.url.includes('youtu.be'));
-  const tools = params.url && !isYouTube ? [{ type: 'google_search' }, { type: 'url_context' }] : undefined;
-
   try {
     const interaction = await ai.interactions.create({
       model: selectedModel,
       system_instruction: systemInstruction,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       input: inputParts as any,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      tools: tools as any,
       response_format: {
         type: 'text',
         mime_type: 'application/json',
@@ -192,7 +179,13 @@ Instructions:
 
     if (parsedData.title === 'RECIPE_NOT_ACCESSIBLE') {
       throw new Error(
-        'INSTAGRAM_BLOCKED: Instagram prevents automatic link scraping without a login session. You can easily convert this recipe by copying the caption text and pasting it in the "Paste Caption" tab, or by dropping a screen recording in the "Video / Photo Upload" tab!'
+        'LINK_BLOCKED: Social media platforms (Instagram, TikTok, YouTube) prevent automatic server-side video scraping. You can easily convert this recipe by copying the caption text and pasting it in the "Paste Caption" tab, or by dropping a screen recording in the "Video / Photo Upload" tab!'
+      );
+    }
+
+    if (!parsedData.ingredients || parsedData.ingredients.length === 0 || !parsedData.steps || parsedData.steps.length === 0) {
+      throw new Error(
+        'NO_RECIPE_FOUND: No recipe ingredients or cooking steps could be detected. Please provide a recipe caption, food ingredients list, or cooking video clip.'
       );
     }
 
