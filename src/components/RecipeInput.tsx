@@ -35,12 +35,10 @@ function YoutubeIcon({ className }: { className?: string }) {
 
 interface RecipeInputProps {
   onRecipeExtracted: (recipe: Recipe) => void;
-  onOpenApiKey: () => void;
 }
 
 export function RecipeInput({
   onRecipeExtracted,
-  onOpenApiKey,
 }: RecipeInputProps) {
   const [url, setUrl] = useState('');
   const [mode, setMode] = useState<'url' | 'upload' | 'text'>('url');
@@ -98,15 +96,6 @@ export function RecipeInput({
     setLoadingStep('Connecting to AI Chef engine...');
 
     try {
-      const customApiKey =
-        typeof window !== 'undefined'
-          ? localStorage.getItem('gemini_api_key') || undefined
-          : undefined;
-      const customModel =
-        typeof window !== 'undefined'
-          ? localStorage.getItem('gemini_model') || 'gemini-3.5-flash-lite'
-          : 'gemini-3.5-flash-lite';
-
       const timer1 = setTimeout(() => {
         setLoadingStep('Analyzing video frames, voiceover, and text overlays...');
       }, 1500);
@@ -119,8 +108,6 @@ export function RecipeInput({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(customApiKey ? { 'x-gemini-api-key': customApiKey } : {}),
-          'x-gemini-model': customModel,
         },
         body: JSON.stringify({
           url: mode === 'url' ? url.trim() : undefined,
@@ -148,7 +135,7 @@ export function RecipeInput({
 
       if (!res.ok || !data.success) {
         if (data.error && data.error.includes('MISSING_API_KEY')) {
-          setError('Gemini API Key required. Click "Configure API Key" to add your free key.');
+          setError('Gemini API key is not configured on the server. Please check your .env.local file.');
           return;
         }
         throw new Error(data.error || 'Failed to extract recipe.');
@@ -346,15 +333,6 @@ export function RecipeInput({
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
-            {error.includes('API Key') && (
-              <button
-                type="button"
-                onClick={onOpenApiKey}
-                className="px-2.5 py-1 rounded-lg bg-red-600 text-white text-xs font-bold hover:bg-red-700 shrink-0"
-              >
-                Configure Key
-              </button>
-            )}
             {(error.includes('Instagram') || error.includes('caption') || error.includes('Caption')) && (
               <button
                 type="button"

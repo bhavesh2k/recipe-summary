@@ -13,9 +13,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'ReelBite - AI Recipe Extractor & Kitchen Companion',
+  title: 'cook.ai - AI Recipe Extractor & Kitchen Companion',
   description: 'Convert Instagram Reels, TikTok, YouTube Shorts, and Pinterest cooking videos into structured, step-by-step recipes with nutrition, timers, and hands-free cook mode.',
   keywords: [
+    'cook.ai',
     'recipe converter',
     'instagram recipe converter',
     'tiktok recipe to text',

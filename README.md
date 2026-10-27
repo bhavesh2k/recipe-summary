@@ -1,4 +1,4 @@
-# 🍳 ReelBite — AI Video Recipe Extractor & Kitchen Companion
+# 🍳 cook.ai — AI Video Recipe Extractor & Kitchen Companion
 
 > Convert Instagram Reels, TikToks, YouTube Shorts, and Pinterest cooking videos into structured, step-by-step recipes with nutrition macros, ingredient scaling, inline timers, and a hands-free Cook Mode.
 
@@ -48,8 +48,6 @@ cp .env.example .env.local
 # Add your GEMINI_API_KEY in .env.local
 ```
 
-Alternatively, you can start the app without `.env.local` and configure your API key directly in the web UI via the **API Key** button in the header.
-
 ### 3. Run Development Server
 ```bash
 npm run dev
@@ -63,7 +61,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 1. Push your code to GitHub:
    ```bash
    git add .
-   git commit -m "feat: initial release of ReelBite"
+   git commit -m "feat: initial release of cook.ai"
    git push origin main
    ```
 2. Log in to [Vercel](https://vercel.com) and click **"Add New Project"**.
@@ -77,4 +75,4 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ## 🛠️ Tech Stack
 - **Framework:** Next.js 16 (App Router, Turbopack, React 19)
 - **Styling:** Tailwind CSS v4, Lucide Icons
-- **AI Model:** Google Gemini 3.8 Flash (`gemini-3.8-flash`) via the official `@google/genai` SDK with strict JSON schema enforcement
+- **AI Model:** Google Gemini 3.5 Flash-Lite (`gemini-3.5-flash-lite`) via the official `@google/genai` SDK with strict JSON schema enforcement

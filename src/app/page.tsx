@@ -7,7 +7,6 @@ import { RecipeCard } from '@/components/RecipeCard';
 import { CookModeModal } from '@/components/CookModeModal';
 import { ShoppingListModal } from '@/components/ShoppingListModal';
 import { CookbookDrawer } from '@/components/CookbookDrawer';
-import { ApiKeyModal } from '@/components/ApiKeyModal';
 import { Recipe, UnitSystem } from '@/types/recipe';
 import { SAMPLE_RECIPES } from '@/lib/sample-recipes';
 import { Sparkles, Utensils } from 'lucide-react';
@@ -22,22 +21,16 @@ export default function Home() {
   const [isCookModeOpen, setIsCookModeOpen] = useState(false);
   const [isShoppingListOpen, setIsShoppingListOpen] = useState(false);
   const [isCookbookOpen, setIsCookbookOpen] = useState(false);
-  const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
 
   // Persistence: Saved Cookbook
   const [savedRecipes, setSavedRecipes] = useState<Recipe[]>(() => {
     if (typeof window === 'undefined') return [];
     try {
-      const stored = localStorage.getItem('reelbite_cookbook');
+      const stored = localStorage.getItem('cook_ai_cookbook') || localStorage.getItem('reelbite_cookbook');
       return stored ? JSON.parse(stored) : [];
     } catch {
       return [];
     }
-  });
-
-  const [hasCustomKey, setHasCustomKey] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    return !!localStorage.getItem('gemini_api_key');
   });
 
   // Update servings when active recipe changes
@@ -61,7 +54,7 @@ export default function Home() {
       }
 
       setSavedRecipes(updated);
-      localStorage.setItem('reelbite_cookbook', JSON.stringify(updated));
+      localStorage.setItem('cook_ai_cookbook', JSON.stringify(updated));
     }
   };
 
@@ -69,7 +62,7 @@ export default function Home() {
     if (typeof window !== 'undefined') {
       const updated = savedRecipes.filter((r) => r.id !== recipeId);
       setSavedRecipes(updated);
-      localStorage.setItem('reelbite_cookbook', JSON.stringify(updated));
+      localStorage.setItem('cook_ai_cookbook', JSON.stringify(updated));
     }
   };
 
@@ -81,8 +74,6 @@ export default function Home() {
       <Navbar
         savedCount={savedRecipes.length}
         onOpenCookbook={() => setIsCookbookOpen(true)}
-        onOpenApiKey={() => setIsApiKeyModalOpen(true)}
-        hasCustomKey={hasCustomKey}
       />
 
       {/* Main Container */}
@@ -109,7 +100,6 @@ export default function Home() {
         <section>
           <RecipeInput
             onRecipeExtracted={handleSelectRecipe}
-            onOpenApiKey={() => setIsApiKeyModalOpen(true)}
           />
         </section>
 
@@ -136,7 +126,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2 font-semibold text-zinc-700 dark:text-zinc-300">
             <Utensils className="w-4 h-4 text-amber-500" />
-            <span>ReelBite — Social Media Recipe Summarizer</span>
+            <span>cook.ai — Social Media Recipe Summarizer</span>
           </div>
 
           <p className="flex items-center gap-1">
@@ -176,17 +166,6 @@ export default function Home() {
         savedRecipes={savedRecipes}
         onSelectRecipe={handleSelectRecipe}
         onDeleteRecipe={handleDeleteSavedRecipe}
-      />
-
-      <ApiKeyModal
-        isOpen={isApiKeyModalOpen}
-        onClose={() => setIsApiKeyModalOpen(false)}
-        onSaved={() => {
-          if (typeof window !== 'undefined') {
-            const key = localStorage.getItem('gemini_api_key');
-            setHasCustomKey(!!key);
-          }
-        }}
       />
     </div>
   );

@@ -93,16 +93,14 @@ interface ExtractParams {
   mediaBase64?: string;
   mediaMimeType?: string;
   metadata?: MediaMetadata;
-  customApiKey?: string;
-  model?: string;
 }
 
 export async function extractRecipeWithGemini(params: ExtractParams): Promise<Recipe> {
-  const apiKey = params.customApiKey || process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
-  const selectedModel = params.model || process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite';
+  const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+  const selectedModel = process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite';
 
-  if (!apiKey) {
-    throw new Error('MISSING_API_KEY: Please provide a Gemini API key in your environment (.env.local) or via the Settings button.');
+  if (!apiKey || apiKey === 'your_gemini_api_key_here') {
+    throw new Error('MISSING_API_KEY: Please set your GEMINI_API_KEY in .env.local.');
   }
 
   const ai = new GoogleGenAI({ apiKey });
