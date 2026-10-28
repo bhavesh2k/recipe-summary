@@ -157,6 +157,9 @@ export function RecipeInput({
         if (cleanErr.startsWith('NO_RECIPE_FOUND: ')) {
           cleanErr = cleanErr.replace('NO_RECIPE_FOUND: ', '');
         }
+        if (cleanErr.startsWith('NON_CULINARY_INPUT: ')) {
+          cleanErr = cleanErr.replace('NON_CULINARY_INPUT: ', '');
+        }
         throw new Error(cleanErr);
       }
 

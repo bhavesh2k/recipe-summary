@@ -5,6 +5,14 @@ import { MediaMetadata } from './metadata-extractor';
 export const RECIPE_JSON_SCHEMA = {
   type: 'object',
   properties: {
+    isCulinaryRecipe: {
+      type: 'boolean',
+      description: 'Strictly true if and only if the input is genuinely about cooking, food, baking, edible beverages, or culinary recipes. Strictly false if the input is non-culinary (e.g. programming/coding, data structures, general trivia, math, homework, medical, technical, automotive, or unrelated questions).',
+    },
+    rejectionReason: {
+      type: 'string',
+      description: 'If isCulinaryRecipe is false, a concise polite explanation of what the topic was and that cook.ai is dedicated exclusively to culinary recipes and cooking guides. If true, leave empty.',
+    },
     title: { type: 'string', description: 'Clear, appealing recipe title' },
     description: { type: 'string', description: '1-2 sentence appetizing description of the dish' },
     servings: { type: 'integer', description: 'Number of servings, e.g. 2 or 4' },
@@ -73,6 +81,7 @@ export const RECIPE_JSON_SCHEMA = {
     },
   },
   required: [
+    'isCulinaryRecipe',
     'title',
     'description',
     'servings',
@@ -105,10 +114,20 @@ export async function extractRecipeWithGemini(params: ExtractParams): Promise<Re
 
   const ai = new GoogleGenAI({ apiKey });
 
-  const systemInstruction = `You are an elite culinary expert and recipe extraction AI.
+  const systemInstruction = `You are cook.ai, an elite culinary expert and recipe extraction AI strictly and exclusively dedicated to culinary food recipes, cooking reels, drinks, and baking.
 Your job is to transform cooking videos, reels, photos, captions, and links into beautifully structured, professional recipes.
 
-Instructions:
+STRICT DOMAIN RESTRICTION:
+- You MUST reject any prompts, captions, questions, or text that are not about culinary cooking, food preparation, edible beverages, or baking.
+- Examples of topics you MUST reject: coding/programming queries (e.g. "how to reverse a linked list", data structures, algorithms, python/javascript code), math problems, homework, medical advice, automotive/car repair, gaming, politics, general knowledge, or conversational chat.
+- When given a non-culinary or unrelated topic:
+  1. Set "isCulinaryRecipe": false.
+  2. Set "rejectionReason": A polite, clear explanation indicating what the input was (e.g. "This appears to be a computer science/programming question rather than a cooking recipe.") and clarifying that cook.ai is dedicated exclusively to culinary recipes and cooking instructions.
+  3. Set "title": "NON_CULINARY_INPUT".
+  4. Set "ingredients": [] and "steps": [].
+  5. DO NOT attempt to format non-food instructions as a recipe (e.g., do NOT turn code, pointers, or tools into "ingredients" or algorithm steps into "cooking steps").
+
+Instructions for valid culinary recipes:
 1. Parse all ingredients with reasonable amounts and standard culinary units (grams, ml, cups, tbsp, tsp, pieces).
 2. If quantities are missing or phrased loosely ("some salt", "a glug of oil"), estimate sensible culinary defaults.
 3. Automatically calculate realistic nutritional estimations (Calories, Protein, Carbs, Fat per serving).
@@ -177,6 +196,13 @@ Instructions:
     }
 
     const parsedData = JSON.parse(outputText);
+
+    if (parsedData.isCulinaryRecipe === false || parsedData.title === 'NON_CULINARY_INPUT') {
+      const reason = parsedData.rejectionReason || 'This prompt does not appear to be related to cooking or culinary recipes.';
+      throw new Error(
+        `NON_CULINARY_INPUT: ${reason} Please paste a cooking video caption, recipe ingredients, or food link.`
+      );
+    }
 
     if (parsedData.title === 'RECIPE_NOT_ACCESSIBLE') {
       throw new Error(
