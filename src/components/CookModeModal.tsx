@@ -111,15 +111,13 @@ export function CookModeModal({
   return (
     <div
       className={`fixed inset-0 z-50 flex flex-col select-none transition-colors duration-200 ${
-        theme === 'pastel'
-          ? 'bg-[#fdfbf7] text-zinc-900'
-          : theme === 'light'
-          ? 'bg-zinc-50 text-zinc-900'
-          : 'bg-zinc-950 text-zinc-100'
+        theme === 'dark'
+          ? 'bg-zinc-950 text-zinc-100'
+          : 'bg-[#fdfbf7] text-zinc-900'
       }`}
     >
-      {/* Ambient pastel mesh background when in pastel mode */}
-      {theme === 'pastel' && (
+      {/* Ambient pastel mesh background when in light mode */}
+      {theme === 'light' && (
         <div
           className="absolute inset-0 pointer-events-none -z-10 opacity-75"
           style={{
@@ -135,7 +133,7 @@ export function CookModeModal({
       )}
 
       {/* Top Bar */}
-      <header className="px-4 sm:px-6 py-3.5 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md transition-colors">
+      <header className="px-4 sm:px-6 py-3.5 border-b border-amber-500/10 dark:border-zinc-800 flex items-center justify-between bg-[#fdfbf7]/80 dark:bg-zinc-900/80 backdrop-blur-md transition-colors">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-sm">
             👨‍🍳
@@ -156,30 +154,17 @@ export function CookModeModal({
         </div>
 
         <div className="flex items-center gap-2 sm:gap-2.5">
-          {/* In-Cook-Mode Theme Selector */}
+          {/* In-Cook-Mode Theme Selector: Light, Dark */}
           <div className="flex items-center p-0.5 rounded-xl bg-amber-500/10 dark:bg-zinc-800 border border-amber-500/20 dark:border-zinc-700 text-xs">
             <button
               type="button"
-              onClick={() => setTheme('pastel')}
-              className={`px-2 py-1 rounded-lg flex items-center gap-1 font-semibold transition-all cursor-pointer ${
-                theme === 'pastel'
-                  ? 'bg-white dark:bg-zinc-700 text-amber-700 dark:text-amber-300 shadow-sm'
-                  : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
-              }`}
-              title="Pastel Light (Default)"
-            >
-              <span>🌸</span>
-              <span className="hidden md:inline">Pastel</span>
-            </button>
-            <button
-              type="button"
               onClick={() => setTheme('light')}
-              className={`px-2 py-1 rounded-lg flex items-center gap-1 font-semibold transition-all cursor-pointer ${
+              className={`px-2.5 py-1 rounded-lg flex items-center gap-1 font-semibold transition-all cursor-pointer ${
                 theme === 'light'
                   ? 'bg-white dark:bg-zinc-700 text-amber-700 dark:text-amber-300 shadow-sm'
                   : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
               }`}
-              title="Clean White Light"
+              title="Light Mode"
             >
               <span>☀️</span>
               <span className="hidden md:inline">Light</span>
@@ -187,7 +172,7 @@ export function CookModeModal({
             <button
               type="button"
               onClick={() => setTheme('dark')}
-              className={`px-2 py-1 rounded-lg flex items-center gap-1 font-semibold transition-all cursor-pointer ${
+              className={`px-2.5 py-1 rounded-lg flex items-center gap-1 font-semibold transition-all cursor-pointer ${
                 theme === 'dark'
                   ? 'bg-white dark:bg-zinc-700 text-amber-500 dark:text-amber-300 shadow-sm'
                   : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'

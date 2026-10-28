@@ -14,13 +14,15 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* Default Pastel Theme - warm, cozy culinary pastel gradient background */
+/* Default Light Theme - warm, cozy culinary pastel gradient background */
+html[data-theme="light"],
 html[data-theme="pastel"],
 html:not([data-theme]):not(.dark) {
   --background: #fdfbf7;
   --foreground: #1c1917;
 }
 
+html[data-theme="light"] body,
 html[data-theme="pastel"] body,
 html:not([data-theme]):not(.dark) body {
   background-color: #fdfbf7;
@@ -33,17 +35,6 @@ html:not([data-theme]):not(.dark) body {
   background-attachment: fixed;
   background-repeat: no-repeat;
   background-size: cover;
-}
-
-/* Clean Light Theme - crisp minimalist white/zinc */
-html[data-theme="light"] {
-  --background: #fafafa;
-  --foreground: #18181b;
-}
-
-html[data-theme="light"] body {
-  background-color: #fafafa;
-  background-image: none;
 }
 
 /* Dark Theme - deep obsidian/zinc */

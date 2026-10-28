@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-export type AppTheme = 'pastel' | 'light' | 'dark';
+export type AppTheme = 'light' | 'dark';
 
 interface ThemeContextType {
   theme: AppTheme;
@@ -10,7 +10,7 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  theme: 'pastel',
+  theme: 'light',
   setTheme: () => {},
 });
 
@@ -27,12 +27,13 @@ function applyDOMTheme(t: AppTheme) {
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<AppTheme>(() => {
-    if (typeof window === 'undefined') return 'pastel';
+    if (typeof window === 'undefined') return 'light';
     try {
-      const saved = localStorage.getItem('cook_ai_theme') as AppTheme | null;
-      return saved === 'dark' || saved === 'light' || saved === 'pastel' ? saved : 'pastel';
+      const saved = localStorage.getItem('cook_ai_theme');
+      if (saved === 'dark') return 'dark';
+      return 'light';
     } catch {
-      return 'pastel';
+      return 'light';
     }
   });
 

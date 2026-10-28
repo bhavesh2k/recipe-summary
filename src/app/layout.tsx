@@ -54,7 +54,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      data-theme="pastel"
+      data-theme="light"
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
@@ -64,7 +64,8 @@ export default function RootLayout({
             __html: `
               (function() {
                 try {
-                  var t = localStorage.getItem('cook_ai_theme') || 'pastel';
+                  var t = localStorage.getItem('cook_ai_theme') || 'light';
+                  if (t === 'pastel') t = 'light';
                   document.documentElement.setAttribute('data-theme', t);
                   if (t === 'dark') {
                     document.documentElement.classList.add('dark');
