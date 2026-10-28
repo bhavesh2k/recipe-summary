@@ -2,7 +2,7 @@
 
 > Convert Instagram Reels, TikToks, YouTube Shorts, and Pinterest cooking videos into structured, step-by-step recipes with nutrition macros, ingredient scaling, inline timers, and a hands-free Cook Mode.
 
-**Live Application:** [https://cookai-web.vercel.app](https://cookai-web.vercel.app)
+**Live Application:** [https://cook-ai-web.vercel.app](https://cook-ai-web.vercel.app)
 
 ---
 
