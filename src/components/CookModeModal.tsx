@@ -161,7 +161,7 @@ export function CookModeModal({
             <button
               type="button"
               onClick={() => setTheme('pastel')}
-              className={`px-2 py-1 rounded-lg flex items-center gap-1 font-semibold transition-all ${
+              className={`px-2 py-1 rounded-lg flex items-center gap-1 font-semibold transition-all cursor-pointer ${
                 theme === 'pastel'
                   ? 'bg-white dark:bg-zinc-700 text-amber-700 dark:text-amber-300 shadow-sm'
                   : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
@@ -174,7 +174,7 @@ export function CookModeModal({
             <button
               type="button"
               onClick={() => setTheme('light')}
-              className={`px-2 py-1 rounded-lg flex items-center gap-1 font-semibold transition-all ${
+              className={`px-2 py-1 rounded-lg flex items-center gap-1 font-semibold transition-all cursor-pointer ${
                 theme === 'light'
                   ? 'bg-white dark:bg-zinc-700 text-amber-700 dark:text-amber-300 shadow-sm'
                   : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
@@ -187,7 +187,7 @@ export function CookModeModal({
             <button
               type="button"
               onClick={() => setTheme('dark')}
-              className={`px-2 py-1 rounded-lg flex items-center gap-1 font-semibold transition-all ${
+              className={`px-2 py-1 rounded-lg flex items-center gap-1 font-semibold transition-all cursor-pointer ${
                 theme === 'dark'
                   ? 'bg-white dark:bg-zinc-700 text-amber-500 dark:text-amber-300 shadow-sm'
                   : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
