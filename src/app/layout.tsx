@@ -40,6 +40,10 @@ export const metadata: Metadata = {
     title: 'cook.ai - AI Recipe Extractor & Kitchen Companion',
     description: 'Convert Instagram Reels, TikTok, YouTube Shorts, and Pinterest cooking videos into structured, step-by-step recipes.',
   },
+  icons: {
+    icon: '/cookai-avatar.png',
+    apple: '/cookai-avatar.png',
+  },
 };
 
 export default function RootLayout({
