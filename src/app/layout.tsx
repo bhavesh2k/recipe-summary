@@ -14,10 +14,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://cookai-web.vercel.app'),
   title: 'cook.ai - AI Recipe Extractor & Kitchen Companion',
   description: 'Convert Instagram Reels, TikTok, YouTube Shorts, and Pinterest cooking videos into structured, step-by-step recipes with nutrition, timers, and hands-free cook mode.',
   keywords: [
     'cook.ai',
+    'cookai',
     'recipe converter',
     'instagram recipe converter',
     'tiktok recipe to text',
@@ -26,6 +28,18 @@ export const metadata: Metadata = {
     'cook mode',
     'cooking timers',
   ],
+  openGraph: {
+    title: 'cook.ai - AI Recipe Extractor & Kitchen Companion',
+    description: 'Convert Instagram Reels, TikTok, YouTube Shorts, and Pinterest cooking videos into structured, step-by-step recipes.',
+    url: 'https://cookai-web.vercel.app',
+    siteName: 'cook.ai',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'cook.ai - AI Recipe Extractor & Kitchen Companion',
+    description: 'Convert Instagram Reels, TikTok, YouTube Shorts, and Pinterest cooking videos into structured, step-by-step recipes.',
+  },
 };
 
 export default function RootLayout({
