@@ -1,17 +1,19 @@
 'use client';
 
 import React from 'react';
-import { ChefHat, Bookmark } from 'lucide-react';
+import { ChefHat, Bookmark, Sparkles } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
 
 interface NavbarProps {
   savedCount: number;
   onOpenCookbook: () => void;
+  onOpenGuide: () => void;
 }
 
 export function Navbar({
   savedCount,
   onOpenCookbook,
+  onOpenGuide,
 }: NavbarProps) {
   const { theme, setTheme } = useTheme();
 
@@ -64,6 +66,17 @@ export function Navbar({
               <span className="hidden sm:inline">Dark</span>
             </button>
           </div>
+
+          {/* Guide / How It Works Button */}
+          <button
+            type="button"
+            onClick={onOpenGuide}
+            className="px-3 py-2 rounded-xl border border-amber-500/15 dark:border-zinc-800 bg-[#fdfbf7]/60 dark:bg-zinc-900/60 hover:bg-white dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 shadow-sm cursor-pointer"
+            title="How cook.ai works & features guide"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+            <span className="hidden sm:inline">Guide</span>
+          </button>
 
           {/* Cookbook button */}
           <button

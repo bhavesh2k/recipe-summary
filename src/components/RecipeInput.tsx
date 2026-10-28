@@ -35,13 +35,22 @@ function YoutubeIcon({ className }: { className?: string }) {
 
 interface RecipeInputProps {
   onRecipeExtracted: (recipe: Recipe) => void;
+  activeMode?: 'url' | 'upload' | 'text';
+  onModeChange?: (mode: 'url' | 'upload' | 'text') => void;
 }
 
 export function RecipeInput({
   onRecipeExtracted,
+  activeMode,
+  onModeChange,
 }: RecipeInputProps) {
   const [url, setUrl] = useState('');
-  const [mode, setMode] = useState<'url' | 'upload' | 'text'>('url');
+  const [internalMode, setInternalMode] = useState<'url' | 'upload' | 'text'>('url');
+  const mode = activeMode !== undefined ? activeMode : internalMode;
+  const setMode = (newMode: 'url' | 'upload' | 'text') => {
+    setInternalMode(newMode);
+    onModeChange?.(newMode);
+  };
   const [rawText, setRawText] = useState('');
   const [fileBase64, setFileBase64] = useState<string | null>(null);
   const [fileMimeType, setFileMimeType] = useState<string | null>(null);
@@ -240,7 +249,7 @@ export function RecipeInput({
                 type="url"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                placeholder="Paste Instagram Reel, TikTok, YouTube Shorts, or Pinterest link..."
+                placeholder="Paste Reel, YouTube, or Pinterest link..."
                 disabled={isLoading}
                 className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
               />
@@ -306,22 +315,55 @@ export function RecipeInput({
 
         {mode === 'text' && (
           <div className="space-y-3">
+            {/* Friendly helper banner for text mode */}
+            <div className="p-3 rounded-2xl bg-amber-500/10 dark:bg-amber-950/30 border border-amber-500/20 text-xs text-amber-800 dark:text-amber-200 flex items-start gap-2.5">
+              <span className="text-base leading-none mt-0.5">💡</span>
+              <div>
+                <p className="font-bold text-zinc-900 dark:text-zinc-100">
+                  No video or link needed!
+                </p>
+                <p className="text-[11px] text-zinc-600 dark:text-zinc-400 mt-0.5 leading-relaxed">
+                  Type <strong>any dish name</strong> or list <strong>whatever ingredients you have in your fridge</strong>. cook.ai will generate the complete step-by-step recipe, macros, aisle shopping list, and timers!
+                </p>
+              </div>
+            </div>
+
             <textarea
-              rows={4}
+              rows={3}
               value={rawText}
               onChange={(e) => setRawText(e.target.value)}
-              placeholder="Paste recipe description, post caption, or ingredients list..."
+              placeholder="Type any dish (e.g. Creamy Tuscan Salmon) or leftover ingredients..."
               disabled={isLoading}
               className="w-full p-3.5 rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all resize-none"
             />
+
+            {/* Quick dish inspiration chips */}
+            <div className="flex flex-wrap items-center gap-1.5 text-xs">
+              <span className="text-zinc-400 text-[11px] mr-0.5">Try:</span>
+              {[
+                '🍗 Garlic Butter Tuscan Salmon',
+                '🍝 15-Minute Carbonara',
+                '🥑 High-Protein Quinoa Bowl',
+              ].map((suggestion) => (
+                <button
+                  key={suggestion}
+                  type="button"
+                  onClick={() => setRawText(suggestion.replace(/^[^\s]+\s/, ''))}
+                  className="px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-amber-100 dark:hover:bg-amber-950/60 text-zinc-700 dark:text-zinc-300 hover:text-amber-800 dark:hover:text-amber-200 text-[11px] font-medium transition-all cursor-pointer"
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+
             <button
               type="button"
               onClick={() => handleExtract()}
               disabled={isLoading || !rawText.trim()}
-              className="w-full py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 disabled:opacity-50 transition-all"
+              className="w-full py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 disabled:opacity-50 transition-all cursor-pointer active:scale-98"
             >
               <Sparkles className="w-4 h-4" />
-              <span>{isLoading ? 'Structuring Recipe...' : 'Convert to Recipe'}</span>
+              <span>{isLoading ? 'Structuring Recipe...' : 'Generate Recipe from Text'}</span>
             </button>
           </div>
         )}
