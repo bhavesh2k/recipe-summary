@@ -69,7 +69,7 @@ export const RECIPE_JSON_SCHEMA = {
     chefTips: {
       type: 'array',
       items: { type: 'string' },
-      description: 'Useful chef tips, substitutions, or serving suggestions',
+      description: 'Useful chef tips, substitutions, or serving suggestions. If mentioning costs or savings, always quote in Indian Rupees (₹).',
     },
   },
   required: [
@@ -114,7 +114,8 @@ Instructions:
 3. Automatically calculate realistic nutritional estimations (Calories, Protein, Carbs, Fat per serving).
 4. For steps that specify time (e.g. "boil for 8 minutes", "bake at 375 for 25 mins"), extract the exact duration in timerSeconds.
 5. Identify chef tips, visual cues, and helpful technique notes.
-6. Even if a video is silent or has only background music, accurately detect what is happening visually.`;
+6. Even if a video is silent or has only background music, accurately detect what is happening visually.
+7. Currency & Pricing: The primary user base is in India. Whenever mentioning any monetary costs, estimated budgets, grocery prices, or ingredient savings in descriptions, notes, or chef tips, ALWAYS use Indian Rupees (INR) with the rupee symbol (₹), e.g. ₹50, ₹150, ₹200. NEVER use US Dollars ($), USD, or other foreign currencies.`;
 
   const inputParts: Array<
     | { type: 'text'; text: string }

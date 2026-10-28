@@ -121,7 +121,7 @@ export function FeatureGuideModal({
                 4. Aisle-Sorted Grocery Lists &amp; Serving Scaling
               </h3>
               <p className="text-zinc-600 dark:text-zinc-400 mt-1 leading-relaxed">
-                Dynamic multipliers ($0.5\times$, $1\times$, $2\times$, $3\times$) recalculate quantities instantly, and shopping lists are automatically sorted by grocery aisles (<em>Produce, Dairy, Meat, Pantry, Spices</em>).
+                Dynamic multipliers (0.5×, 1×, 2×, 3×) recalculate quantities instantly, and shopping lists are automatically sorted by grocery aisles (<em>Produce, Dairy, Meat, Pantry, Spices</em>).
               </p>
             </div>
           </div>

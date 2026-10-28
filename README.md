@@ -18,7 +18,7 @@
 
 - **Intelligent Recipe Structuring:**
   - **Nutritional Estimation & Macros:** Automatically calculates estimated Calories, Protein (g), Carbohydrates (g), and Fat (g) per serving.
-  - **Dynamic Serving Scaler:** Real-time multipliers ($0.5\times, 1\times, 2\times, 3\times$) or custom stepper.
+  - **Dynamic Serving Scaler:** Real-time multipliers (0.5×, 1×, 2×, 3×) or custom stepper.
   - **Unit Converter:** Toggle between Metric (g, ml) and Imperial (cups, oz, tbsp) on the fly.
   - **Interactive Step Timers:** Automatic countdown timers with pleasant kitchen chimes powered by the Web Audio API.
 
