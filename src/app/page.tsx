@@ -13,9 +13,10 @@ import { SAMPLE_RECIPES } from '@/lib/sample-recipes';
 import { Utensils, X, Sparkles, Smartphone, Clock, ArrowRight } from 'lucide-react';
 
 export default function Home() {
-  // Active recipe defaults to the first rich sample recipe for immediate exploration
-  const [activeRecipe, setActiveRecipe] = useState<Recipe>(SAMPLE_RECIPES[0]);
-  const [servings, setServings] = useState<number>(SAMPLE_RECIPES[0].servings || 2);
+  // Active recipe defaults to the Fluffy Japanese Cloud YouTube recipe for immediate exploration
+  const defaultRecipe = SAMPLE_RECIPES.find((r) => r.id === 'sample-souffle-pancakes') || SAMPLE_RECIPES[0];
+  const [activeRecipe, setActiveRecipe] = useState<Recipe>(defaultRecipe);
+  const [servings, setServings] = useState<number>(defaultRecipe.servings || 2);
   const [unitSystem, setUnitSystem] = useState<UnitSystem>('metric');
 
   // Modals & Drawers state
