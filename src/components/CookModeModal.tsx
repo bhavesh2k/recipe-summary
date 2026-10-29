@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   Trophy,
   RotateCcw,
+  Check,
 } from 'lucide-react';
 import { Recipe, UnitSystem } from '@/types/recipe';
 import { convertAndScale } from '@/lib/unit-conversion';
@@ -221,8 +222,18 @@ export function CookModeModal({
       {/* Main Cooking Stage */}
       <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-12 max-w-4xl mx-auto w-full text-center relative overflow-y-auto">
         {isAllCompleted && (
-          <div className="mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 text-sm font-semibold animate-bounce shadow-sm">
-            <Trophy className="w-4 h-4" /> All steps completed! Bon appétit!
+          <div className="mb-6 flex flex-wrap items-center justify-center gap-3 animate-in fade-in zoom-in-95 duration-200">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 text-sm font-semibold shadow-sm animate-bounce">
+              <Trophy className="w-4 h-4" /> All steps completed! Bon appétit!
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-md flex items-center gap-1.5 cursor-pointer active:scale-95"
+            >
+              <Check className="w-3.5 h-3.5" />
+              <span>Finish &amp; Close</span>
+            </button>
           </div>
         )}
 
@@ -288,16 +299,30 @@ export function CookModeModal({
             <span>Next Step</span> <ChevronRight className="w-4 h-4" />
           </button>
         ) : (
-          <button
-            type="button"
-            onClick={() => {
-              setCompletedSteps({});
-              setCurrentStepIdx(0);
-            }}
-            className="px-4 sm:px-5 py-3 rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 font-semibold text-sm flex items-center gap-2 shadow-sm"
-          >
-            <RotateCcw className="w-4 h-4" /> Restart
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setCompletedSteps({});
+                setCurrentStepIdx(0);
+              }}
+              className="px-3.5 sm:px-4 py-3 rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 font-semibold text-sm flex items-center gap-1.5 shadow-sm cursor-pointer transition-colors"
+              title="Restart from Step 1"
+            >
+              <RotateCcw className="w-4 h-4" />
+              <span className="hidden sm:inline">Restart</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 sm:px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold text-sm flex items-center gap-1.5 shadow-lg shadow-emerald-500/20 transition-all active:scale-95 cursor-pointer"
+              title="Finish Cooking and Exit Cook Mode"
+            >
+              <Check className="w-4 h-4" />
+              <span>Finish &amp; Exit</span>
+            </button>
+          </div>
         )}
       </footer>
 
