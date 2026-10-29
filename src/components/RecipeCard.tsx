@@ -96,6 +96,26 @@ export function RecipeCard({
   const scaledCarbs = Math.round((recipe.nutrition.carbs || 0));
   const scaledFat = Math.round((recipe.nutrition.fat || 0));
 
+  const getSourceLabel = () => {
+    const url = (recipe.sourceUrl || '').toLowerCase();
+    const platform = recipe.platform;
+
+    if (platform === 'youtube' || url.includes('youtube.com') || url.includes('youtu.be')) {
+      if (url.includes('/shorts/')) return 'Original Short';
+      return 'Original Video';
+    }
+    if (platform === 'instagram' || url.includes('instagram.com')) {
+      return 'Original Reel';
+    }
+    if (platform === 'tiktok' || url.includes('tiktok.com')) {
+      return 'Original TikTok';
+    }
+    if (platform === 'pinterest' || url.includes('pinterest.com') || url.includes('pin.it')) {
+      return 'Original Pin';
+    }
+    return 'Original Video';
+  };
+
   return (
     <article className="w-full max-w-4xl mx-auto bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-xl overflow-hidden print:border-none print:shadow-none">
       {/* Top Banner / Hero */}
@@ -124,9 +144,9 @@ export function RecipeCard({
                 href={recipe.sourceUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 text-xs font-medium inline-flex items-center gap-1.5 transition-colors"
+                className="px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer"
               >
-                Original Reel <ExternalLink className="w-3 h-3" />
+                {getSourceLabel()} <ExternalLink className="w-3 h-3" />
               </a>
             )}
             <button
