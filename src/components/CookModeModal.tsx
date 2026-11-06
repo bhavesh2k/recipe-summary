@@ -347,7 +347,8 @@ export function CookModeModal({
                 ing.amount,
                 ing.unit,
                 scaleFactor,
-                unitSystem
+                unitSystem,
+                ing.item
               );
               return (
                 <div

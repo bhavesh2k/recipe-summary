@@ -44,7 +44,13 @@ export function ShoppingListModal({
     Object.entries(grouped).forEach(([cat, items]) => {
       text += `📍 ${cat}:\n`;
       items.forEach((ing) => {
-        const { amount, unit } = convertAndScale(ing.amount, ing.unit, scaleFactor, unitSystem);
+        const { amount, unit } = convertAndScale(
+          ing.amount,
+          ing.unit,
+          scaleFactor,
+          unitSystem,
+          ing.item
+        );
         text += `  • ${amount} ${unit} ${ing.item}${ing.notes ? ` (${ing.notes})` : ''}\n`;
       });
       text += '\n';
@@ -94,7 +100,8 @@ export function ShoppingListModal({
                     ing.amount,
                     ing.unit,
                     scaleFactor,
-                    unitSystem
+                    unitSystem,
+                    ing.item
                   );
 
                   return (

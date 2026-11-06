@@ -47,7 +47,10 @@ export const RECIPE_JSON_SCHEMA = {
         properties: {
           item: { type: 'string', description: 'Name of the ingredient (e.g. Garlic, Chicken thighs, Heavy cream)' },
           amount: { type: 'number', description: 'Numeric quantity (e.g. 2, 250, 0.5)' },
-          unit: { type: 'string', description: 'Unit of measurement (e.g. g, ml, cups, tbsp, tsp, cloves, pieces, pinch)' },
+          unit: {
+            type: 'string',
+            description: 'Unit of measurement (e.g. g, ml, cups, tbsp, tsp, cloves, pieces, pinch). Strictly use "tsp" or "tbsp" for spices, seasonings, powders, and small measures (e.g. cumin, chilli powder, salt, oil). NEVER use "ml" for spices or powders.',
+          },
           category: {
             type: 'string',
             enum: ['Produce', 'Dairy & Refrigerated', 'Meat & Seafood', 'Pantry & Spices', 'Bakery & Grains', 'Other'],
@@ -129,12 +132,13 @@ STRICT DOMAIN RESTRICTION:
 
 Instructions for valid culinary recipes:
 1. Parse all ingredients with reasonable amounts and standard culinary units (grams, ml, cups, tbsp, tsp, pieces).
-2. If quantities are missing or phrased loosely ("some salt", "a glug of oil"), estimate sensible culinary defaults.
-3. Automatically calculate realistic nutritional estimations (Calories, Protein, Carbs, Fat per serving).
-4. For steps that specify time (e.g. "boil for 8 minutes", "bake at 375 for 25 mins"), extract the exact duration in timerSeconds.
-5. Identify chef tips, visual cues, and helpful technique notes.
-6. Even if a video is silent or has only background music, accurately detect what is happening visually.
-7. Currency & Pricing: The primary user base is in India. Whenever mentioning any monetary costs, estimated budgets, grocery prices, or ingredient savings in descriptions, notes, or chef tips, ALWAYS use Indian Rupees (INR) with the rupee symbol (₹), e.g. ₹50, ₹150, ₹200. NEVER use US Dollars ($), USD, or other foreign currencies.`;
+2. CRITICAL UNIT RULE: ALWAYS use "tsp" (teaspoon) or "tbsp" (tablespoon) for spices, powders, seasonings, and small measures (e.g. "1 tsp cumin", "2 tbsp chilli powder", "0.5 tsp turmeric", "1 tsp salt", "1 tbsp oil"). NEVER convert or output teaspoons or tablespoons into milliliters ("ml") for solids, spices, seasonings, or powders.
+3. If quantities are missing or phrased loosely ("some salt", "a glug of oil"), estimate sensible culinary defaults.
+4. Automatically calculate realistic nutritional estimations (Calories, Protein, Carbs, Fat per serving).
+5. For steps that specify time (e.g. "boil for 8 minutes", "bake at 375 for 25 mins"), extract the exact duration in timerSeconds.
+6. Identify chef tips, visual cues, and helpful technique notes.
+7. Even if a video is silent or has only background music, accurately detect what is happening visually.
+8. Currency & Pricing: The primary user base is in India. Whenever mentioning any monetary costs, estimated budgets, grocery prices, or ingredient savings in descriptions, notes, or chef tips, ALWAYS use Indian Rupees (INR) with the rupee symbol (₹), e.g. ₹50, ₹150, ₹200. NEVER use US Dollars ($), USD, or other foreign currencies.`;
 
   const inputParts: Array<
     | { type: 'text'; text: string }

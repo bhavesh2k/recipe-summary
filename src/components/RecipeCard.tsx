@@ -418,7 +418,8 @@ export function RecipeCard({
                       ing.amount,
                       ing.unit,
                       scaleFactor,
-                      unitSystem
+                      unitSystem,
+                      ing.item
                     );
 
                     return (

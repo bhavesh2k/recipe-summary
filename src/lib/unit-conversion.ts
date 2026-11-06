@@ -1,9 +1,28 @@
 import { UnitSystem } from '@/types/recipe';
 
+// Helper to detect if an item is a spice, powder, dry seasoning, or solid measuring unit
+export function isSolidOrSpice(itemName?: string): boolean {
+  if (!itemName) return false;
+  const name = itemName.toLowerCase();
+
+  const spiceAndSolidKeywords = [
+    'powder', 'spice', 'spices', 'cumin', 'chilli', 'chili', 'turmeric',
+    'coriander', 'paprika', 'pepper', 'salt', 'masala', 'cinnamon', 'cardamom',
+    'garam masala', 'curry', 'nutmeg', 'clove', 'cloves', 'fenugreek', 'methi',
+    'mustard', 'asafoetida', 'hing', 'fennel', 'amchur', 'chaat', 'saffron',
+    'cayenne', 'herb', 'herbs', 'oregano', 'thyme', 'rosemary', 'basil',
+    'bay leaf', 'allspice', 'sumac', 'zaatar', 'seasoning', 'flakes', 'seeds',
+    'sesame', 'chia', 'flax', 'baking powder', 'baking soda', 'yeast',
+    'cornstarch', 'cocoa', 'matcha', 'cream of tartar', 'extract', 'sugar', 'flour'
+  ];
+
+  return spiceAndSolidKeywords.some((kw) => name.includes(kw));
+}
+
 // Helper to format decimal numbers to fractions or clean decimals
 export function formatAmount(val: number): string {
   if (val <= 0) return '';
-  
+
   // Round to 2 decimal places to avoid floating point weirdness
   const rounded = Math.round(val * 100) / 100;
   const whole = Math.floor(rounded);
@@ -31,10 +50,34 @@ export function convertAndScale(
   baseAmount: number,
   baseUnit: string,
   scaleFactor: number,
-  targetSystem: UnitSystem
+  targetSystem: UnitSystem,
+  itemName?: string
 ): { amount: string; unit: string } {
   const scaled = baseAmount * scaleFactor;
   const unitLower = baseUnit.toLowerCase().trim();
+
+  // 1. Teaspoons and Tablespoons: Keep as tsp / tbsp in BOTH Metric and Imperial!
+  // In standard culinary practice, measuring spoons (tsp/tbsp) are used universally for spices,
+  // powders, seasonings, and small quantities. They must never be converted to milliliters (ml).
+  if (unitLower === 'tbsp' || unitLower === 'tablespoon' || unitLower === 'tablespoons') {
+    return { amount: formatAmount(scaled), unit: 'tbsp' };
+  }
+
+  if (unitLower === 'tsp' || unitLower === 'teaspoon' || unitLower === 'teaspoons') {
+    return { amount: formatAmount(scaled), unit: 'tsp' };
+  }
+
+  // 2. If an ingredient was given in ml for a solid/spice (e.g. cumin, chilli powder, salt),
+  // convert it into standard measuring spoons (tsp or tbsp) instead of ml.
+  if (
+    (unitLower === 'ml' || unitLower === 'milliliters' || unitLower === 'millilitres') &&
+    isSolidOrSpice(itemName)
+  ) {
+    if (scaled >= 15) {
+      return { amount: formatAmount(scaled / 15), unit: 'tbsp' };
+    }
+    return { amount: formatAmount(scaled / 5), unit: 'tsp' };
+  }
 
   if (targetSystem === 'imperial') {
     // Convert Metric to Imperial
@@ -52,6 +95,8 @@ export function convertAndScale(
       } else if (scaled >= 15) {
         return { amount: formatAmount(scaled / 15), unit: 'tbsp' };
       } else if (scaled >= 5) {
+        return { amount: formatAmount(scaled / 5), unit: 'tsp' };
+      } else if (scaled > 0) {
         return { amount: formatAmount(scaled / 5), unit: 'tsp' };
       }
       return { amount: formatAmount(scaled / 29.57), unit: 'fl oz' };
@@ -81,14 +126,6 @@ export function convertAndScale(
 
     if (unitLower === 'cup' || unitLower === 'cups') {
       return { amount: formatAmount(scaled * 240), unit: 'ml' };
-    }
-
-    if (unitLower === 'tbsp' || unitLower === 'tablespoon' || unitLower === 'tablespoons') {
-      return { amount: formatAmount(scaled * 15), unit: 'ml' };
-    }
-
-    if (unitLower === 'tsp' || unitLower === 'teaspoon' || unitLower === 'teaspoons') {
-      return { amount: formatAmount(scaled * 5), unit: 'ml' };
     }
 
     if (unitLower === 'fl oz') {
