@@ -156,6 +156,21 @@ export function FeatureGuideModal({
               </p>
             </div>
           </div>
+
+          {/* Kitchen App Tip: Add to Home Screen */}
+          <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/5 border border-amber-500/25 flex items-start gap-3">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+              <Smartphone className="w-4 h-4" />
+            </div>
+            <div className="text-xs sm:text-sm">
+              <h3 className="font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
+                <span>📱 Kitchen Stand Pro-Tip: Add to Home Screen</span>
+              </h3>
+              <p className="text-zinc-600 dark:text-zinc-400 mt-1 leading-relaxed">
+                Open cook.ai in your mobile browser and tap <strong>&quot;Add to Home Screen&quot;</strong> (Safari on iPhone / Chrome on Android). It installs cook.ai as a full-screen kitchen companion app with the chef hat icon right on your counter!
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Footer CTA */}

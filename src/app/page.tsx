@@ -205,9 +205,9 @@ export default function Home() {
                     </div>
                     <div className="bg-white/70 dark:bg-zinc-800/60 p-2.5 rounded-xl border border-amber-500/15">
                       <span className="font-semibold text-zinc-900 dark:text-zinc-100 flex items-center gap-1 mb-0.5">
-                        <Smartphone className="w-3.5 h-3.5 text-emerald-500" /> Cook Mode
+                        <Smartphone className="w-3.5 h-3.5 text-emerald-500" /> Cook Mode &amp; App
                       </span>
-                      <span>Keeps your screen awake on kitchen stands without dimming.</span>
+                      <span>Keeps screen awake on stands. Tip: &quot;Add to Home Screen&quot; on mobile for the full kitchen app!</span>
                     </div>
                     <div className="bg-white/70 dark:bg-zinc-800/60 p-2.5 rounded-xl border border-amber-500/15">
                       <span className="font-semibold text-zinc-900 dark:text-zinc-100 flex items-center gap-1 mb-0.5">
