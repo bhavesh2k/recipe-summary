@@ -33,6 +33,56 @@ function YoutubeIcon({ className }: { className?: string }) {
   );
 }
 
+/**
+ * Client-side image compressor: Resizes large camera photos (e.g. 10MB+) down to max 1600px,
+ * preventing Vercel 4.5MB payload crashes while preserving full culinary text & ingredient clarity.
+ */
+function compressImageFile(
+  file: File,
+  maxDimension = 1600,
+  quality = 0.85
+): Promise<{ base64: string; mimeType: string }> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxDimension || height > maxDimension) {
+          if (width > height) {
+            height = Math.round((height * maxDimension) / width);
+            width = maxDimension;
+          } else {
+            width = Math.round((width * maxDimension) / height);
+            height = maxDimension;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          const base64 = (reader.result as string).split(',')[1];
+          resolve({ base64, mimeType: file.type });
+          return;
+        }
+
+        ctx.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+        const base64 = dataUrl.split(',')[1];
+        resolve({ base64, mimeType: 'image/jpeg' });
+      };
+      img.src = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 interface RecipeInputProps {
   onRecipeExtracted: (recipe: Recipe) => void;
   activeMode?: 'url' | 'upload' | 'text';
@@ -62,18 +112,47 @@ export function RecipeInput({
 
   const detected = url ? detectPlatform(url) : null;
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 25 * 1024 * 1024) {
-      setError('File size too large. Please select a clip or photo under 25MB.');
+    setError(null);
+
+    // 1. Image handling: automatically compress on the client to avoid exceeding Vercel limits
+    if (file.type.startsWith('image/')) {
+      try {
+        setFileName(file.name);
+        setFileMimeType('image/jpeg');
+        const { base64, mimeType } = await compressImageFile(file);
+        setFileBase64(base64);
+        setFileMimeType(mimeType);
+      } catch (err) {
+        console.warn('Image compression fallback to standard read:', err);
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = reader.result as string;
+          setFileBase64(result.split(',')[1]);
+        };
+        reader.readAsDataURL(file);
+      }
+      return;
+    }
+
+    // 2. Video handling: Vercel serverless has a strict 4.5MB request payload limit
+    const MAX_VIDEO_BYTES = 3.5 * 1024 * 1024; // 3.5MB (base64 adds 33% ~ 4.6MB)
+    if (file.size > MAX_VIDEO_BYTES) {
+      const mbSize = (file.size / (1024 * 1024)).toFixed(1);
+      setError(
+        `Selected video is ${mbSize}MB. Vercel serverless functions limit direct video uploads to 3.5MB. Tip: Paste the video link (YouTube Shorts or Instagram Reel) in the "Video Link" tab, or copy the caption text into "Paste Caption" for instant extraction!`
+      );
+      e.target.value = '';
+      setFileName(null);
+      setFileBase64(null);
       return;
     }
 
     setFileName(file.name);
     setFileMimeType(file.type);
-    setError(null);
 
     const reader = new FileReader();
     reader.onload = () => {
@@ -134,6 +213,11 @@ export function RecipeInput({
       try {
         data = JSON.parse(resText);
       } catch {
+        if (res.status === 413 || resText.includes('FUNCTION_PAYLOAD_TOO_LARGE') || resText.includes('Payload Too Large')) {
+          throw new Error(
+            'The uploaded file exceeds the 4.5MB serverless payload limit. Please use an image or shorter video clip under 3.5MB, or paste the video link/caption directly!'
+          );
+        }
         if (resText.includes('An error occurred') || res.status >= 500) {
           throw new Error(
             'Instagram actively blocks automatic link scraping without a login session. You can easily extract this recipe by copying the reel\'s caption into the "Paste Caption" tab or uploading the video clip directly!'
@@ -298,7 +382,7 @@ export function RecipeInput({
                 {fileName ? fileName : 'Click to select a video clip or carousel photo'}
               </p>
               <p className="text-xs text-zinc-400 mt-1">
-                Supports MP4, MOV, WebM, PNG, JPG (up to 25MB)
+                Supports PNG, JPG (auto-compressed) &amp; video clips (up to 3.5MB)
               </p>
             </label>
 

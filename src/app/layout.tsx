@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/context/ThemeContext';
@@ -13,10 +13,22 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+export const viewport: Viewport = {
+  themeColor: '#fdfbf7',
+  width: 'device-width',
+  initialScale: 1,
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://cook-ai-web.vercel.app'),
   title: 'cook.ai - AI Recipe Extractor & Kitchen Companion',
   description: 'Convert Instagram Reels, TikTok, YouTube Shorts, and Pinterest cooking videos into structured, step-by-step recipes with nutrition, timers, and hands-free cook mode.',
+  manifest: '/manifest.webmanifest',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'cook.ai',
+  },
   keywords: [
     'cook.ai',
     'cookai',

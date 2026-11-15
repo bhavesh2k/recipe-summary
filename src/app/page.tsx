@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { RecipeInput } from '@/components/RecipeInput';
 import { RecipeCard } from '@/components/RecipeCard';
@@ -10,6 +10,7 @@ import { CookbookDrawer } from '@/components/CookbookDrawer';
 import { FeatureGuideModal } from '@/components/FeatureGuideModal';
 import { Recipe, UnitSystem } from '@/types/recipe';
 import { SAMPLE_RECIPES } from '@/lib/sample-recipes';
+import { decodeRecipeFromLocation } from '@/lib/recipe-share';
 import { Utensils, X, Sparkles, Smartphone, Clock, ArrowRight } from 'lucide-react';
 
 export default function Home() {
@@ -88,6 +89,38 @@ export default function Home() {
   };
 
   const isCurrentRecipeSaved = savedRecipes.some((r) => r.id === activeRecipe?.id);
+
+  // Incoming Shared Recipe Handler (from search params or URL hash)
+  const [sharedNotice, setSharedNotice] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const loadShared = async () => {
+      const decoded = await decodeRecipeFromLocation(window.location.search, window.location.hash);
+      if (decoded) {
+        setActiveRecipe(decoded);
+        setServings(decoded.servings || 2);
+        setSharedNotice(`Viewing shared recipe: "${decoded.title}"`);
+        // Smoothly scroll to the recipe card
+        setTimeout(() => {
+          const el = document.getElementById('recipe-view');
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 350);
+      }
+    };
+
+    loadShared();
+
+    const onHashChange = () => {
+      loadShared();
+    };
+
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-transparent text-zinc-900 dark:text-zinc-100">
@@ -197,7 +230,34 @@ export default function Home() {
 
         {/* Display Active Recipe Card */}
         {activeRecipe && (
-          <section id="recipe-view" className="scroll-mt-24">
+          <section id="recipe-view" className="scroll-mt-24 space-y-4">
+            {sharedNotice && (
+              <div className="p-3.5 sm:p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between gap-3 text-amber-900 dark:text-amber-200 text-sm shadow-xs animate-fade-in print:hidden">
+                <div className="flex items-center gap-2 min-w-0">
+                  <Sparkles className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                  <span className="font-medium truncate">{sharedNotice}</span>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  {!isCurrentRecipeSaved && (
+                    <button
+                      type="button"
+                      onClick={() => handleSaveToCookbook(activeRecipe)}
+                      className="px-3 py-1 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+                    >
+                      Save to Cookbook
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setSharedNotice(null)}
+                    className="p-1 rounded-lg text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 cursor-pointer transition-colors"
+                    title="Dismiss"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
             <RecipeCard
               recipe={activeRecipe}
               servings={servings}

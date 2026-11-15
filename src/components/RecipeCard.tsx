@@ -17,9 +17,12 @@ import {
   CheckSquare,
   Square,
   Lightbulb,
+  Sparkles,
+  Loader2,
 } from 'lucide-react';
 import { Recipe, UnitSystem } from '@/types/recipe';
 import { convertAndScale } from '@/lib/unit-conversion';
+import { generateRecipeShareUrl } from '@/lib/recipe-share';
 import { StepTimer } from './StepTimer';
 
 interface RecipeCardProps {
@@ -48,6 +51,8 @@ export function RecipeCard({
   const [checkedIngredients, setCheckedIngredients] = useState<Record<string, boolean>>({});
   const [checkedSteps, setCheckedSteps] = useState<Record<number, boolean>>({});
   const [copiedLink, setCopiedLink] = useState(false);
+  const [shareNotice, setShareNotice] = useState<string | null>(null);
+  const [isSharing, setIsSharing] = useState(false);
 
   const scaleFactor = servings / (recipe.servings || 1);
 
@@ -73,20 +78,57 @@ export function RecipeCard({
     }
   };
 
-  const handleShare = () => {
-    if (typeof window !== 'undefined') {
-      const shareUrl = recipe.sourceUrl || window.location.href;
+  const handleShare = async () => {
+    if (typeof window === 'undefined' || isSharing) return;
+    setIsSharing(true);
+    setShareNotice(null);
+
+    try {
+      const shareUrl = await generateRecipeShareUrl(recipe);
+
       if (navigator.share) {
-        navigator.share({
-          title: recipe.title,
-          text: `Check out this recipe for ${recipe.title}!`,
-          url: shareUrl,
-        }).catch(() => {});
-      } else {
-        navigator.clipboard.writeText(shareUrl);
-        setCopiedLink(true);
-        setTimeout(() => setCopiedLink(false), 2000);
+        try {
+          await navigator.share({
+            title: `${recipe.title} - cook.ai`,
+            text: `Check out this recipe for ${recipe.title} on cook.ai!`,
+            url: shareUrl,
+          });
+          setCopiedLink(true);
+          setShareNotice('Recipe shared!');
+          setTimeout(() => {
+            setCopiedLink(false);
+            setShareNotice(null);
+          }, 3500);
+          return;
+        } catch (shareErr) {
+          // If native share dialog was dismissed by user, do nothing; if failed, fall through to clipboard
+          if ((shareErr as Error).name === 'AbortError') return;
+        }
       }
+
+      // Clipboard fallback
+      await navigator.clipboard.writeText(shareUrl);
+      setCopiedLink(true);
+      setShareNotice('Shareable link copied! Anyone with this link can view this full recipe.');
+      setTimeout(() => {
+        setCopiedLink(false);
+        setShareNotice(null);
+      }, 4000);
+    } catch (err) {
+      console.warn('Share failed:', err);
+      // Last resort fallback
+      try {
+        const fallbackUrl = recipe.sourceUrl || window.location.href;
+        await navigator.clipboard.writeText(fallbackUrl);
+        setCopiedLink(true);
+        setShareNotice('Link copied to clipboard!');
+        setTimeout(() => {
+          setCopiedLink(false);
+          setShareNotice(null);
+        }, 3000);
+      } catch {}
+    } finally {
+      setIsSharing(false);
     }
   };
 
@@ -138,7 +180,12 @@ export function RecipeCard({
           </div>
 
           {/* Share & Source Link */}
-          <div className="flex items-center gap-2 print:hidden">
+          <div className="flex items-center gap-2 print:hidden relative">
+            {shareNotice && (
+              <span className="hidden sm:inline-block px-3 py-1 rounded-xl bg-emerald-100 dark:bg-emerald-950/70 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold animate-fade-in shadow-sm">
+                {shareNotice}
+              </span>
+            )}
             {recipe.sourceUrl && (
               <a
                 href={recipe.sourceUrl}
@@ -152,10 +199,17 @@ export function RecipeCard({
             <button
               type="button"
               onClick={handleShare}
-              className="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors"
-              title="Share Recipe"
+              disabled={isSharing}
+              className="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors cursor-pointer"
+              title="Share Recipe Link"
             >
-              {copiedLink ? <Check className="w-4 h-4 text-emerald-500" /> : <Share2 className="w-4 h-4" />}
+              {isSharing ? (
+                <Loader2 className="w-4 h-4 animate-spin text-amber-500" />
+              ) : copiedLink ? (
+                <Check className="w-4 h-4 text-emerald-500" />
+              ) : (
+                <Share2 className="w-4 h-4" />
+              )}
             </button>
           </div>
         </div>
@@ -264,6 +318,14 @@ export function RecipeCard({
               {scaledFat}g
             </strong>
           </div>
+        </div>
+
+        {/* AI Nutrition Disclaimer */}
+        <div className="w-full pt-2.5 border-t border-amber-200/60 dark:border-amber-900/40 flex items-start sm:items-center gap-1.5 text-[11px] text-zinc-500 dark:text-zinc-400">
+          <Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 shrink-0 mt-0.5 sm:mt-0" />
+          <span>
+            <strong className="font-semibold text-zinc-700 dark:text-zinc-300">AI Nutrition Disclaimer:</strong> Estimated values generated by AI for guidance only. Actual nutritional content may vary based on specific brands, exact ingredients, and cooking methods.
+          </span>
         </div>
       </div>
 

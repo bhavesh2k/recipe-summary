@@ -13,7 +13,7 @@
   - **TikTok:** Cooking videos and voiceovers.
   - **YouTube Shorts & Videos:** Direct video comprehension via Google Gemini.
   - **Facebook Reels & Pinterest Pins.**
-  - **Direct Upload:** Drag & drop MP4/MOV clips or photos (up to 25MB).
+  - **Direct Upload:** Drag & drop photos (auto-compressed) or short video clips (up to 3.5MB).
   - **Silent Video Parsing:** Uses Gemini's visual frame recognition to detect ingredients and techniques even when the video has only background music.
 
 - **Intelligent Recipe Structuring:**

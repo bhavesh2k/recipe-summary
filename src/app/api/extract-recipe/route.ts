@@ -4,8 +4,33 @@ import { fetchSocialMetadata } from '@/lib/metadata-extractor';
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    let body;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            'Failed to parse request payload. If you uploaded a file, it may exceed Vercel serverless payload limits (4.5MB). Please use a shorter video clip or paste the recipe link/caption.',
+        },
+        { status: 413 }
+      );
+    }
+
     const { url, rawText, mediaBase64, mediaMimeType } = body;
+
+    // Guard against oversized base64 payloads that could exceed serverless memory or timeouts
+    if (mediaBase64 && typeof mediaBase64 === 'string' && mediaBase64.length > 4.5 * 1024 * 1024) {
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            'Uploaded media exceeds the 4.5MB serverless payload limit. Please upload a smaller clip under 3.5MB or paste the recipe link/text instead.',
+        },
+        { status: 413 }
+      );
+    }
 
     if (!url && !rawText && !mediaBase64) {
       return NextResponse.json(

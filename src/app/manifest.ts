@@ -1,0 +1,35 @@
+import type { MetadataRoute } from 'next';
+
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    name: 'cook.ai - AI Recipe Extractor & Kitchen Companion',
+    short_name: 'cook.ai',
+    description:
+      'Convert Instagram Reels, TikTok, YouTube Shorts, and Pinterest cooking videos into structured recipes with hands-free Cook Mode and timers.',
+    start_url: '/',
+    id: '/',
+    display: 'standalone',
+    orientation: 'any',
+    background_color: '#fdfbf7',
+    theme_color: '#fdfbf7',
+    icons: [
+      {
+        src: '/cookai-avatar.png',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'maskable',
+      },
+      {
+        src: '/icon.png',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'any',
+      },
+      {
+        src: '/apple-icon.png',
+        sizes: '512x512',
+        type: 'image/png',
+      },
+    ],
+  };
+}

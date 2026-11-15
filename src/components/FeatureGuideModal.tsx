@@ -10,6 +10,7 @@ import {
   BookMarked,
   ChefHat,
   ArrowRight,
+  Share2,
 } from 'lucide-react';
 
 interface FeatureGuideModalProps {
@@ -137,6 +138,21 @@ export function FeatureGuideModal({
               </h3>
               <p className="text-zinc-600 dark:text-zinc-400 mt-1 leading-relaxed">
                 Save any extracted recipe to your browser&apos;s offline cookbook with 1-click. No account or sign-up needed.
+              </p>
+            </div>
+          </div>
+
+          {/* Feature 6: Shareable Recipe Links */}
+          <div className="p-3.5 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200/80 dark:border-zinc-800 flex items-start gap-3">
+            <div className="w-8 h-8 rounded-xl bg-teal-500 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+              <Share2 className="w-4 h-4" />
+            </div>
+            <div className="text-xs sm:text-sm">
+              <h3 className="font-bold text-zinc-900 dark:text-zinc-100">
+                6. Share with Friends &amp; Family
+              </h3>
+              <p className="text-zinc-600 dark:text-zinc-400 mt-1 leading-relaxed">
+                Tap the <strong>Share</strong> button on any recipe to copy a direct link. Anyone who opens the link sees the complete recipe, ingredients, and timers without needing to install anything.
               </p>
             </div>
           </div>
