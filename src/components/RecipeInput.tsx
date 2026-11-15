@@ -13,6 +13,7 @@ import {
 import { detectPlatform } from '@/lib/metadata-extractor';
 import { Recipe } from '@/types/recipe';
 import { SAMPLE_RECIPES } from '@/lib/sample-recipes';
+import { TurnstileWidget } from '@/components/TurnstileWidget';
 
 function InstagramIcon({ className }: { className?: string }) {
   return (
@@ -110,6 +111,10 @@ export function RecipeInput({
   const [loadingStep, setLoadingStep] = useState('');
   const [error, setError] = useState<string | null>(null);
 
+  // Bot Protection (Option 1 & 3): Honeypot trap & Cloudflare Turnstile token
+  const [botTrap, setBotTrap] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+
   const detected = url ? detectPlatform(url) : null;
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -202,6 +207,8 @@ export function RecipeInput({
           rawText: mode === 'text' ? rawText.trim() : undefined,
           mediaBase64: fileBase64 || undefined,
           mediaMimeType: fileMimeType || undefined,
+          bot_trap: botTrap || undefined,
+          turnstileToken: turnstileToken || undefined,
         }),
       });
 
@@ -318,6 +325,18 @@ export function RecipeInput({
 
       {/* Main Input Box */}
       <div className="bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 rounded-3xl p-3 sm:p-4 shadow-xl relative transition-all">
+        {/* Invisible Bot Defense (Option 1 & 3): Turnstile & Honeypot */}
+        <TurnstileWidget onToken={setTurnstileToken} />
+        <input
+          type="text"
+          name="chef_website_url"
+          value={botTrap}
+          onChange={(e) => setBotTrap(e.target.value)}
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+          className="opacity-0 pointer-events-none absolute -left-[9999px] -top-[9999px] h-0 w-0 z-[-1]"
+        />
         {mode === 'url' && (
           <form onSubmit={handleExtract} className="flex flex-col sm:flex-row gap-2.5">
             <div className="relative flex-1 flex items-center">

@@ -1,9 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { extractRecipeWithGemini } from '@/lib/gemini';
 import { fetchSocialMetadata } from '@/lib/metadata-extractor';
+import { validateOriginAndReferer, verifyTurnstileToken } from '@/lib/bot-protection';
 
 export async function POST(req: NextRequest) {
   try {
+    // 1. Bot Defense: Validate Request Origin / Referer (Option 3)
+    const originCheck = validateOriginAndReferer(req);
+    if (!originCheck.allowed) {
+      return NextResponse.json(
+        { success: false, error: originCheck.reason || 'Forbidden request origin.' },
+        { status: 403 }
+      );
+    }
+
     let body;
     try {
       body = await req.json();
@@ -15,6 +25,25 @@ export async function POST(req: NextRequest) {
             'Failed to parse request payload. If you uploaded a file, it may exceed Vercel serverless payload limits (4.5MB). Please use a shorter video clip or paste the recipe link/caption.',
         },
         { status: 413 }
+      );
+    }
+
+    // 2. Bot Defense: Honeypot Trap (Option 3)
+    // Automated crawlers blindly fill all form inputs; humans never see or fill this.
+    if (body.bot_trap && String(body.bot_trap).trim() !== '') {
+      return NextResponse.json(
+        { success: false, error: 'Automated activity detected.' },
+        { status: 400 }
+      );
+    }
+
+    // 3. Bot Defense: Cloudflare Turnstile Challenge Verification (Option 1)
+    const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim();
+    const turnstileCheck = await verifyTurnstileToken(body.turnstileToken, clientIp);
+    if (!turnstileCheck.allowed) {
+      return NextResponse.json(
+        { success: false, error: turnstileCheck.reason || 'Security verification failed.' },
+        { status: 403 }
       );
     }
 
