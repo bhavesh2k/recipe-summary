@@ -11,7 +11,7 @@ import { FeatureGuideModal } from '@/components/FeatureGuideModal';
 import { Recipe, UnitSystem } from '@/types/recipe';
 import { SAMPLE_RECIPES } from '@/lib/sample-recipes';
 import { decodeRecipeFromLocation } from '@/lib/recipe-share';
-import { Utensils, X, Sparkles, Smartphone, Clock, ArrowRight } from 'lucide-react';
+import { Utensils, X, Sparkles, Smartphone, Clock, ArrowRight, Mail } from 'lucide-react';
 
 export default function Home() {
   // Active recipe defaults to the Fluffy Japanese Cloud YouTube recipe for immediate exploration
@@ -281,9 +281,14 @@ export default function Home() {
             <span>cook.ai — Social Media Recipe Summarizer</span>
           </div>
 
-          <p className="flex items-center gap-1">
-            Built with Next.js &amp; Multimodal AI
-          </p>
+          <a
+            href="mailto:bhavesh.agarwal2k@gmail.com?subject=cook.ai%20Feedback"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-amber-500/60 dark:hover:border-amber-500/60 hover:text-amber-600 dark:hover:text-amber-400 transition-colors text-zinc-600 dark:text-zinc-400 font-medium cursor-pointer"
+            title="Email: bhavesh.agarwal2k@gmail.com"
+          >
+            <Mail className="w-3.5 h-3.5 text-amber-500" />
+            <span>Contact Developer</span>
+          </a>
 
           <p className="text-zinc-400 text-[11px]">
             Tip: Open in mobile browser and &quot;Add to Home Screen&quot; for the kitchen app.
