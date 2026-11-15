@@ -44,6 +44,19 @@ export async function POST(req: NextRequest) {
       metadata = await fetchSocialMetadata(url);
     }
 
+    // If a social media link was provided alone without uploaded video/photo or text, and the platform
+    // blocked our server scraper (returning no title and no description), return an actionable helpful error.
+    if (url && !rawText && !mediaBase64 && !metadata?.title && !metadata?.description) {
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            'LINK_BLOCKED: Instagram actively blocks automatic server-side scraping for this link. You can easily extract this recipe by copying the reel\'s caption into the "Paste Caption" tab, or by dropping a screen recording in the "Video / Photo Upload" tab!',
+        },
+        { status: 400 }
+      );
+    }
+
     const recipe = await extractRecipeWithGemini({
       url,
       rawText,

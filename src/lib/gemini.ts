@@ -121,9 +121,10 @@ export async function extractRecipeWithGemini(params: ExtractParams): Promise<Re
 Your job is to transform cooking videos, reels, photos, captions, and links into beautifully structured, professional recipes.
 
 STRICT DOMAIN RESTRICTION:
-- You MUST reject any prompts, captions, questions, or text that are not about culinary cooking, food preparation, edible beverages, or baking.
+- You MUST reject any prompts, captions, questions, or text that are genuinely not about culinary cooking, food preparation, edible beverages, or baking.
 - Examples of topics you MUST reject: coding/programming queries (e.g. "how to reverse a linked list", data structures, algorithms, python/javascript code), math problems, homework, medical advice, automotive/car repair, gaming, politics, general knowledge, or conversational chat.
-- When given a non-culinary or unrelated topic:
+- Social media reels, cooking videos, captions, or links whose title or text mentions a food dish, baked item, or beverage (such as "Eggless Banana cake", "Sourdough", "Paneer Tikka", "Cold Brew") are EXPLICITLY CULINARY. You MUST NEVER reject them as non-culinary.
+- When given a genuinely non-culinary topic (e.g. programming or homework):
   1. Set "isCulinaryRecipe": false.
   2. Set "rejectionReason": A polite, clear explanation indicating what the input was (e.g. "This appears to be a computer science/programming question rather than a cooking recipe.") and clarifying that cook.ai is dedicated exclusively to culinary recipes and cooking instructions.
   3. Set "title": "NON_CULINARY_INPUT".
@@ -138,7 +139,14 @@ Instructions for valid culinary recipes:
 5. For steps that specify time (e.g. "boil for 8 minutes", "bake at 375 for 25 mins"), extract the exact duration in timerSeconds.
 6. Identify chef tips, visual cues, and helpful technique notes.
 7. Even if a video is silent or has only background music, accurately detect what is happening visually.
-8. Currency & Pricing: The primary user base is in India. Whenever mentioning any monetary costs, estimated budgets, grocery prices, or ingredient savings in descriptions, notes, or chef tips, ALWAYS use Indian Rupees (INR) with the rupee symbol (₹), e.g. ₹50, ₹150, ₹200. NEVER use US Dollars ($), USD, or other foreign currencies.`;
+8. Currency & Pricing: The primary user base is in India. Whenever mentioning any monetary costs, estimated budgets, grocery prices, or ingredient savings in descriptions, notes, or chef tips, ALWAYS use Indian Rupees (INR) with the rupee symbol (₹), e.g. ₹50, ₹150, ₹200. NEVER use US Dollars ($), USD, or other foreign currencies.
+9. Social Media & Reel Recipe Synthesis:
+When a post title, video caption, or reel metadata names a specific culinary food, baked good, drink, or dish (e.g. "Eggless Banana cake", "Butter Chicken", "Chocolate Chip Cookies"):
+- This is a 100% VALID culinary recipe!
+- If the creator's caption only includes the dish title, hashtags, or partial notes without full step-by-step measurements (typical of Instagram reels where the creator cooks visually on camera):
+  - Formulate the complete, authentic, chef-tested culinary recipe for that exact dish.
+  - Provide accurate, well-proportioned ingredients and clear step-by-step cooking/baking instructions.
+  - In chefTips, include: "Recipe crafted for [Dish Title] based on the creator's video reel."`;
 
   const inputParts: Array<
     | { type: 'text'; text: string }
@@ -157,12 +165,8 @@ Instructions for valid culinary recipes:
   }
 
   // 2. Assemble text instructions & metadata
-  let promptText = `Extract the complete, structured recipe according to the schema.\n`;
+  let promptText = `Extract or formulate the complete, structured recipe according to the schema.\n`;
 
-  if (params.url) {
-    promptText += `Source URL: ${params.url}\n`;
-    promptText += `Note: If this URL is from a social platform (e.g. Instagram, TikTok, YouTube) and no video media, caption text, or title was provided or accessible, set title to "RECIPE_NOT_ACCESSIBLE" and describe the blockage in description.\n`;
-  }
   if (params.metadata?.title) {
     promptText += `Video / Recipe Title: ${params.metadata.title}\n`;
   }
@@ -174,6 +178,10 @@ Instructions for valid culinary recipes:
   }
   if (params.rawText) {
     promptText += `User Provided Text / Notes:\n${params.rawText}\n`;
+  }
+  if (params.url) {
+    promptText += `Source URL: ${params.url}\n`;
+    promptText += `Note: If this URL is from a social platform and no video media, caption text, or title was accessible, set title to "RECIPE_NOT_ACCESSIBLE". If a culinary dish title or caption is provided, synthesize the full authentic recipe.\n`;
   }
 
   inputParts.push({
@@ -203,6 +211,12 @@ Instructions for valid culinary recipes:
 
     if (parsedData.isCulinaryRecipe === false || parsedData.title === 'NON_CULINARY_INPUT') {
       const reason = parsedData.rejectionReason || 'This prompt does not appear to be related to cooking or culinary recipes.';
+      const lower = reason.toLowerCase();
+      if (lower.includes('social media link') || lower.includes('inaccessible') || lower.includes('cannot access') || lower.includes('unable to access')) {
+        throw new Error(
+          'LINK_BLOCKED: Instagram actively blocks automatic server-side scraping for this link. You can easily extract this recipe by copying the reel\'s caption into the "Paste Caption" tab, or by dropping a screen recording in the "Video / Photo Upload" tab!'
+        );
+      }
       throw new Error(
         `NON_CULINARY_INPUT: ${reason} Please paste a cooking video caption, recipe ingredients, or food link.`
       );
